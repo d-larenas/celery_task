@@ -353,3 +353,4 @@ $RECYCLE.BIN/
 *.lnk
 .envs/*
 # End of https://www.toptal.com/developers/gitignore/api/venv,linux,windows,pycharm,python,visualstudiocode,virtualenv
+/file_log/log.json
