@@ -4,9 +4,8 @@ services:
   celery_beat_app:
     build:
       context: .
-      dockerfile: compose/.local/Dockerfile
-    image: image_celery_beat
-    container_name: celery_beat_app
+      dockerfile: compose/.production/Dockerfile
+    image: image_celery_beat_production
     volumes:
       - .:/app:z
     env_file:

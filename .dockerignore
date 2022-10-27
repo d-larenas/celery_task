@@ -1,0 +1,11 @@
+.env.example
+local.yml
+production.yml
+README.md
+venv
+.envs
+*.md
+!README*.md
+README-secret.md
+.git
+.cache
