@@ -1,5 +1,3 @@
-from pathlib import Path
-
 from celery_service import celery_app as app
 import datetime
 import requests
@@ -16,6 +14,7 @@ logging.basicConfig(level=logging.INFO)
 
 @app.task
 def check_page():
+    """Check status of website."""
     url_list = Setting.TASK_PAGE_LIST
     for url in url_list:
         response = validate_page(url)
@@ -30,7 +29,7 @@ def check_page():
 
 
 def validate_page(url):
-    """"""
+    """Valid the page status."""
     try:
         r = requests.get(url)
         status_msg = {"status": r.status_code, "message": r.reason}
@@ -43,6 +42,7 @@ def validate_page(url):
 
 
 def send_email(message, url_page):
+    """Send email if status of page is not 200."""
     email_host = Setting.EMAIL_HOST_USER
     email_sent = Setting.TASK_DESTINATION_EMAIL
     msg_html = message_html(message)
@@ -68,6 +68,7 @@ def send_email(message, url_page):
 
 
 def validate_log(response, url):
+    """Read and write logs in file json."""
     log_list = get_log()
     set_log(response["datetime"]["date"], response["datetime"]["time"], response["status"], response["message"], url)
     try:

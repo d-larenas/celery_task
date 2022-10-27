@@ -4,4 +4,5 @@ set -o errexit
 set -o pipefail
 set -o nounset
 
-celery -A celery_service worker -l INFO & celery -A celery_service beat -l INFO
+celery -A celery_service worker -l INFO & celery -A celery_service beat -l INFO --schedule celery_beat_schedule/celerybeat-schedule.db
+
