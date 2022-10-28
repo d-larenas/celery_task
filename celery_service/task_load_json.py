@@ -15,7 +15,7 @@ def load_task_json():
             task = json.load(file)
     except FileNotFoundError:
         with open(file_path, "w", encoding="utf-8") as file:
-            json.dump([], file)
+            json.dump({}, file)
         return {}
     return task
 
