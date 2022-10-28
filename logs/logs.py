@@ -3,6 +3,7 @@ from pathlib import Path
 
 
 def get_log():
+    """Read file json."""
     root_dir = Path(__file__).resolve(strict=True).parent.parent
     file_path = root_dir / "file_log" / "log.json"
     try:
@@ -17,6 +18,7 @@ def get_log():
 
 
 def set_log(date_log, time_log, status, mgs, url):
+    """Write file json."""
     root_dir = Path(__file__).resolve(strict=True).parent.parent
     file_path = root_dir / "file_log" / "log.json"
     with open(file_path, "r+", encoding="utf-8") as f:
@@ -24,5 +26,3 @@ def set_log(date_log, time_log, status, mgs, url):
         results.append({"date": date_log, "time": time_log, "status": status, "message": mgs, "url": url})
         f.seek(0)
         f.write(json.dumps(results))
-
-

@@ -9,7 +9,7 @@ env.read_env(str(root_dir / ".env"))
 
 
 class Setting:
-    """"""
+    """Environment variable class."""
     CELERY_BROKER = env("CELERY_BROKER", "redis://localhost:6379/0")
 
     CELERY_TIMEZONE = env("CELERY_TIMEZONE", "UTC")
