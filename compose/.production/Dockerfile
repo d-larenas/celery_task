@@ -6,7 +6,7 @@ FROM python:${PYTHON_VERSION} as python
 # Python build stage
 FROM python as python-build-stage
 
-ARG BUILD_ENVIRONMENT=base
+ARG BUILD_ENVIRONMENT=production
 # Install apt packages
 RUN apt-get update && apt-get install --no-install-recommends -y \
   # dependencies for building Python packages
@@ -69,9 +69,13 @@ COPY --from=python-build-stage /usr/src/app/wheels  /wheels/
 RUN pip install --no-cache-dir --no-index --find-links=/wheels/ /wheels/* \
   && rm -rf /wheels/
 
-COPY --chown=celery_app:celery_app ./start /start
-RUN sed -i 's/\r$//g' /start
-RUN chmod +x /start
+COPY --chown=celery_app:celery_app /celery_start/beat/start /celery_start/beat/start
+RUN sed -i 's/\r$//g' /celery_start/beat/start
+RUN chmod +x /celery_start/beat/start
+
+COPY --chown=celery_app:celery_app /celery_start/worker/start /celery_start/worker/start
+RUN sed -i 's/\r$//g' /celery_start/worker/start
+RUN chmod +x /celery_start/worker/start
 
 # copy application code to WORKDIR
 COPY --chown=celery_app:celery_app . ${APP_HOME}
