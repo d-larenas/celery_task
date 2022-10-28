@@ -37,7 +37,7 @@ Add env.example variable file.
 
 ```
 
-## Installation
+## Celery beat task settings
 
 Scheduled task settings
 
@@ -46,7 +46,7 @@ Edit file /celery_service/task_json/task.json
 ```
   {
     "name_task_beat_schedule": {
-        "task": "tasks.task.check_page", # tarea a ejecutar
+        "task": "tasks.task.check_page", # task to execute
         "schedule": {  # execution schedule 
             "minute":0, # int or str
             "hour":"*/1"
