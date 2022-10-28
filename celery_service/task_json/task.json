@@ -9,7 +9,7 @@
     "check-status-page-day": {
         "task": "tasks.task.check_page",
         "schedule": {
-            "minute":"*/5"
+            "minute":"*/1"
         }
     }
 

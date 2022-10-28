@@ -3,4 +3,25 @@
 set -o errexit
 set -o nounset
 rm -f './celerybeat.pid'
-celery -A celery_service beat -l INFO --schedule celery_beat_schedule/celerybeat-schedule.db
+
+PATH_FILE_LOG=file_log
+
+if [ -d $PATH_FILE_LOG ]
+then
+   echo "PATH $PATH_FILE_LOG IS OK!"
+else
+   echo "PATH $PATH_FILE_LOG DOES NOT EXIST, CREATE NOW"
+   mkdir -p $PATH_FILE_LOG
+fi
+
+PATH_BEAT_SCHEDULE=celery_beat_schedule
+
+if [ -d $PATH_BEAT_SCHEDULE ]
+then
+   echo "PATH $PATH_BEAT_SCHEDULE IS OK!"
+else
+   echo "PATH $PATH_BEAT_SCHEDULE DOES NOT EXIST, CREATE NOW"
+   mkdir -p $PATH_BEAT_SCHEDULE
+fi
+
+celery -A celery_service beat -l INFO --schedule $PATH_BEAT_SCHEDULE/celerybeat-schedule.db
