@@ -6,13 +6,29 @@ services:
       context: .
       dockerfile: compose/.production/Dockerfile
     image: image_celery_beat_production
+    container_name: celery_beat_production
     volumes:
       - .:/app:z
     env_file:
       - .envs/.local
     depends_on:
       - redis
-    command: /start
+    command: /celery_start/beat/start
+
+  celery_worker_app:
+    build:
+      context: .
+      dockerfile: compose/.production/Dockerfile
+    image: image_celery_worker_production
+    container_name: celery_worker_production
+    volumes:
+      - .:/app:z
+    env_file:
+      - .envs/.local
+    depends_on:
+      - redis
+    command: /celery_start/worker/start
 
   redis:
-    image: redis:6
+    image: redis:6-alpine
+

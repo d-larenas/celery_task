@@ -37,6 +37,92 @@ Add env.example variable file.
 
 ```
 
+## Installation
+
+Scheduled task settings
+
+Edit file /celery_service/task_json/task.json
+
+```
+  {
+    "name_task_beat_schedule": {
+        "task": "tasks.task.check_page", # tarea a ejecutar
+        "schedule": {  # execution schedule 
+            "minute":0, # int or str
+            "hour":"*/1"
+        }
+    },
+    "check-status-page-day": {
+        "task": "tasks.task.check_page",
+        "schedule": {
+            "minute":"*/5"
+        }
+    }
+
+}
+```
+ Finally the dictionary for beat schedule is generated
+
+```
+from celery.schedules import crontab
+
+app.conf.beat_schedule = {
+'check-status-page': {
+	'task': 'tasks.task.check_page',
+	 'schedule': crontab(minute=0, hour="*/1")
+	 },
+'check-status-page-day': {
+	'task': 'tasks.task.check_page',
+	'schedule': crontab(minute="*/5")
+	}
+}
+```
+
+### Example
+
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 48%">
+<col style="width: 52%">
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><strong>Example</strong></p></td>
+<td><p><strong>Meaning</strong></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class=""><span class="pre"><span class="highlighted">crontab</span>(minute=0,</span> <span class="pre">hour=0)</span></code></p></td>
+<td><p>Execute daily at midnight.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre"><span class="highlighted">crontab</span>(minute=0,</span> <span class="pre">hour='*/3')</span></code></p></td>
+<td><p>Execute every three hours:
+midnight, 3am, 6am, 9am,
+noon, 3pm, 6pm, 9pm.</p></td>
+</tr>
+<tr class="row-odd"><td><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre"><span class="highlighted">crontab</span>(minute=0,</span></code></dt><dd><p><code class="docutils literal notranslate"><span class="pre">hour='0,3,6,9,12,15,18,21')</span></code></p>
+</dd>
+</dl>
+</td>
+<td><p>Same as previous.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre"><span class="highlighted">crontab</span>(minute='*/15')</span></code></p></td>
+<td><p>Execute every 15 minutes.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre"><span class="highlighted">crontab</span>(day_of_week='sunday')</span></code></p></td>
+<td><p>Execute every minute (!) at Sundays.</p></td>
+</tr>
+
+
+</tbody>
+</table>
+
+
+    
+## Documentation
+
+[docs.celeryq.dev - Periodic Tasks](https://docs.celeryq.dev/en/stable/userguide/periodic-tasks.html?highlight=crontab#crontab-schedules)
+
+
+
 ## Connect with me  
 <div align="center">
 <a href="https://github.com/larenas-d" target="_blank">
@@ -50,3 +136,5 @@ Add env.example variable file.
 </a>
  
 </div> 
+
+

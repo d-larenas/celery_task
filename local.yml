@@ -5,15 +5,47 @@ services:
     build:
       context: .
       dockerfile: compose/.local/Dockerfile
-    image: image_celery_beat
-    container_name: celery_beat_app
+    image: image_celery_beat_local
+    container_name: celery_beat_local
     volumes:
       - .:/app:z
     env_file:
       - .envs/.local
     depends_on:
       - redis
-    command: /start
+    command: /celery_start/beat/start
+
+  celery_worker_app:
+    build:
+      context: .
+      dockerfile: compose/.local/Dockerfile
+    image: image_celery_worker_local
+    container_name: celery_worker_local
+    volumes:
+      - .:/app:z
+    env_file:
+      - .envs/.local
+    depends_on:
+      - redis
+    command: /celery_start/worker/start
+
+  celery_flower_app:
+    build:
+      context: .
+      dockerfile: compose/.local/Dockerfile
+    image: image_celery_flower_local
+    container_name: celery_flower_local
+    volumes:
+      - .:/app:z
+    env_file:
+      - .envs/.local
+    depends_on:
+      - redis
+    ports:
+      - "5555:5555"
+    command: /celery_start/flower/start
 
   redis:
-    image: redis:6
+    image: redis:6-alpine
+
+

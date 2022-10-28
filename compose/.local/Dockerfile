@@ -1,6 +1,6 @@
 ARG PYTHON_VERSION=3.9-slim-buster
 FROM python as python-build-stage
-ARG BUILD_ENVIRONMENT=base
+ARG BUILD_ENVIRONMENT=local
 
 ENV TZ=America/Santiago
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
@@ -16,9 +16,18 @@ RUN apt-get update && \
     sed -i -e 's/# es_ES.UTF-8 UTF-8/es_ES.UTF-8 UTF-8/' /etc/locale.gen && \
     dpkg-reconfigure --frontend=noninteractive locales
 
-COPY ./start /start
-RUN sed -i 's/\r$//g' /start
-RUN chmod +x /start
+
+COPY celery_start/beat/start /celery_start/beat/start
+RUN sed -i 's/\r$//g' /celery_start/beat/start
+RUN chmod +x /celery_start/beat/start
+
+COPY celery_start/worker/start /celery_start/worker/start
+RUN sed -i 's/\r$//g' /celery_start/worker/start
+RUN chmod +x /celery_start/worker/start
+
+COPY celery_start/flower/start /celery_start/flower/start
+RUN sed -i 's/\r$//g' /celery_start/flower/start
+RUN chmod +x /celery_start/flower/start
 
 COPY . app
 
