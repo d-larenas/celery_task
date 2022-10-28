@@ -82,8 +82,8 @@ COPY --chown=celery_app:celery_app . ${APP_HOME}
 # make celery owner of the WORKDIR directory as well.
 RUN chown -R celery_app:celery_app ${APP_HOME}
 
-RUN chown celery_app:celery_app celery_beat_schedule
-RUN chown -R celery_app:celery_app file_log
+# log file
+#RUN chown -R celery_app:celery_app file_log
 
 USER celery_app
 
