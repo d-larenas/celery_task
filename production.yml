@@ -1,36 +1,57 @@
 version: '3'
 
+volumes:
+  local_postgres_data: {}
+  local_postgres_data_backups: {}
+
 services:
   celery_beat_app:
     build:
       context: .
-      dockerfile: compose/.production/Dockerfile
+      dockerfile: compose/.production/celery/Dockerfile
     image: image_celery_beat_production
-    container_name: celery_beat_production
     volumes:
       - .:/app:z
-      - ./code:/code
+      - ./celery_service/task_json:/celery_service/task_json
+      - ./celery_beat_schedule:/celery_beat_schedule
     env_file:
       - .envs/.local
+      - .envs/.postgres
     depends_on:
       - redis
+      - postgres
     command: /celery_start/beat/start
 
   celery_worker_app:
     build:
       context: .
-      dockerfile: compose/.production/Dockerfile
+      dockerfile: compose/.production/celery/Dockerfile
     image: image_celery_worker_production
-    container_name: celery_worker_production
     volumes:
       - .:/app:z
-      - ./code:/code
+      - ./celery_service/task_json:/celery_service/task_json
+      - ./celery_beat_schedule:/celery_beat_schedule
     env_file:
       - .envs/.local
+      - .envs/.postgres
     depends_on:
       - redis
+      - postgres
     command: /celery_start/worker/start
 
   redis:
     image: redis:6-alpine
+
+  postgres:
+    build:
+      context: .
+      dockerfile: compose/.production/postgres/Dockerfile
+    image: celery_production_postgres
+    volumes:
+      - local_postgres_data:/var/lib/postgresql/data:Z
+      - local_postgres_data_backups:/backups:z
+    env_file:
+      - ./.envs/.postgres
+    ports:
+      - "5432:5432"
 

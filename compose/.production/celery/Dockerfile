@@ -51,6 +51,7 @@ RUN addgroup --system celery_app \
     && adduser --system --ingroup celery_app celery_app
 RUN usermod -u 1000 celery_app
 
+
 # Install required system dependencies
 RUN apt-get update && apt-get install --no-install-recommends -y \
   # psycopg2 dependencies
@@ -73,6 +74,10 @@ COPY --chown=celery_app:celery_app /celery_start/beat/start /celery_start/beat/s
 RUN sed -i 's/\r$//g' /celery_start/beat/start
 RUN chmod +x /celery_start/beat/start
 
+COPY --chown=celery_app:celery_app /compose/.production/celery/entrypoint /entrypoint
+RUN sed -i 's/\r$//g' /entrypoint
+RUN chmod +x /entrypoint
+
 COPY --chown=celery_app:celery_app /celery_start/worker/start /celery_start/worker/start
 RUN sed -i 's/\r$//g' /celery_start/worker/start
 RUN chmod +x /celery_start/worker/start
@@ -82,9 +87,13 @@ COPY --chown=celery_app:celery_app . ${APP_HOME}
 # make celery owner of the WORKDIR directory as well.
 RUN chown -R celery_app:celery_app ${APP_HOME}
 
-# log file
-#RUN chown -R celery_app:celery_app file_log
+RUN mkdir -p /celery_service/task_json
+RUN chown -R celery_app:celery_app /celery_service/task_json
+
+RUN mkdir -p /celery_beat_schedule
+RUN chown -R celery_app:celery_app /celery_beat_schedule
+
 
 USER celery_app
-
+ENTRYPOINT ["/entrypoint"]
 

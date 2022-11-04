@@ -21,6 +21,10 @@ COPY celery_start/beat/start /celery_start/beat/start
 RUN sed -i 's/\r$//g' /celery_start/beat/start
 RUN chmod +x /celery_start/beat/start
 
+COPY compose/.local/entrypoint /entrypoint
+RUN sed -i 's/\r$//g' /entrypoint
+RUN chmod +x /entrypoint
+
 COPY celery_start/worker/start /celery_start/worker/start
 RUN sed -i 's/\r$//g' /celery_start/worker/start
 RUN chmod +x /celery_start/worker/start
@@ -31,6 +35,13 @@ RUN chmod +x /celery_start/flower/start
 
 COPY . app
 
-RUN echo $PYTHONPATH
+RUN mkdir -p /celery_service/task_json
+RUN chown -R /celery_service/task_json
+
+RUN mkdir -p /celery_beat_schedule
+RUN chown -R  /celery_beat_schedule
+
+
+ENTRYPOINT ["/entrypoint"]
 
 
