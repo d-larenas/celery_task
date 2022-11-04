@@ -36,10 +36,10 @@ RUN chmod +x /celery_start/flower/start
 COPY . app
 
 RUN mkdir -p /celery_service/task_json
-RUN chown -R /celery_service/task_json
+
 
 RUN mkdir -p /celery_beat_schedule
-RUN chown -R  /celery_beat_schedule
+
 
 
 ENTRYPOINT ["/entrypoint"]
