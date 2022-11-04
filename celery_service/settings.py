@@ -25,3 +25,5 @@ class Setting:
     EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD")
 
     EMAIL_PORT = env("EMAIL_PORT")
+
+    DATABASE_URL = env("DATABASE_URL")

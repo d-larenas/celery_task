@@ -3,6 +3,8 @@ from pathlib import Path
 import datetime
 from logs import get_log, set_log
 import pandas as pd
+from celery.schedules import crontab
+from celery_service.task_load_json import get_beat_schedule
 
 
 def validate_log(response, url):
@@ -18,14 +20,7 @@ def validate_log(response, url):
             return True
     return False
 
-response = {}
-date_time = datetime.datetime.now()
-time = date_time.strftime("%H:%M:%S")
-date = date_time.strftime("%d-%m-%Y")
-response["datetime"] = {"time": time, "date": date}
-response["status"] = 500
-response["message"] = "hola"
-url = "https://app.gropoz.co"
-ss = validate_log(response, url)
 
 
+ss = get_beat_schedule()
+d = 2
