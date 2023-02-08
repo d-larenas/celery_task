@@ -1,8 +1,4 @@
-version: '3'
-
-volumes:
-  local_postgres_data: {}
-  local_postgres_data_backups: {}
+version: '3.7'
 
 services:
   celery_beat_app:
@@ -20,7 +16,8 @@ services:
       - .envs/.postgres
     depends_on:
       - redis
-      - postgres
+    networks:
+      - gropoz-network
     command: /celery_start/beat/start
 
   celery_worker_app:
@@ -38,7 +35,8 @@ services:
       - .envs/.postgres
     depends_on:
       - redis
-      - postgres
+    networks:
+      - gropoz-network
     command: /celery_start/worker/start
 
   celery_flower_app:
@@ -56,25 +54,17 @@ services:
       - .envs/.postgres
     depends_on:
       - redis
-      - postgres
     ports:
       - "5555:5555"
+    networks:
+      - gropoz-network
     command: /celery_start/flower/start
 
   redis:
     image: redis:6-alpine
+    networks:
+      - gropoz-network
 
-  postgres:
-    build:
-      context: .
-      dockerfile: compose/.production/postgres/Dockerfile
-    image: celery_local_postgres
-    container_name: celery_local_postgres
-    volumes:
-      - local_postgres_data:/var/lib/postgresql/data:Z
-      - local_postgres_data_backups:/backups:z
-    env_file:
-      - ./.envs/.postgres
-    ports:
-      - "5432:5432"
-
+networks:
+    gropoz-network:
+      external: true
