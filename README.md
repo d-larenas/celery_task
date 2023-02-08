@@ -16,6 +16,7 @@ Add env.example variable file.
 ```
   .envs -> path
   └── .local ->file
+  └── .postgres ->file
      
 ```
 
