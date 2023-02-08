@@ -1,36 +1,49 @@
-version: '3'
+version: '3.7'
+
 
 services:
   celery_beat_app:
     build:
       context: .
-      dockerfile: compose/.production/Dockerfile
+      dockerfile: compose/.production/celery/Dockerfile
     image: image_celery_beat_production
-    container_name: celery_beat_production
     volumes:
       - .:/app:z
-      - ./code:/code
+      - ./celery_service/task_json:/celery_service/task_json
+      - ./celery_beat_schedule:/celery_beat_schedule
     env_file:
       - .envs/.local
+      - .envs/.postgres
     depends_on:
       - redis
+    networks:
+      - gropoz-network
     command: /celery_start/beat/start
 
   celery_worker_app:
     build:
       context: .
-      dockerfile: compose/.production/Dockerfile
+      dockerfile: compose/.production/celery/Dockerfile
     image: image_celery_worker_production
-    container_name: celery_worker_production
     volumes:
       - .:/app:z
-      - ./code:/code
+      - ./celery_service/task_json:/celery_service/task_json
+      - ./celery_beat_schedule:/celery_beat_schedule
     env_file:
       - .envs/.local
+      - .envs/.postgres
     depends_on:
       - redis
+    networks:
+      - gropoz-network
     command: /celery_start/worker/start
 
   redis:
     image: redis:6-alpine
+    networks:
+      - gropoz-network
+
+networks:
+    gropoz-network:
+      external: true
 

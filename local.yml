@@ -1,4 +1,4 @@
-version: '3'
+version: '3.7'
 
 services:
   celery_beat_app:
@@ -9,10 +9,15 @@ services:
     container_name: celery_beat_local
     volumes:
       - .:/app:z
+      - ./celery_service/task_json:/celery_service/task_json
+      - ./celery_beat_schedule:/celery_beat_schedule
     env_file:
       - .envs/.local
+      - .envs/.postgres
     depends_on:
       - redis
+    networks:
+      - gropoz-network
     command: /celery_start/beat/start
 
   celery_worker_app:
@@ -23,10 +28,15 @@ services:
     container_name: celery_worker_local
     volumes:
       - .:/app:z
+      - ./celery_service/task_json:/celery_service/task_json
+      - ./celery_beat_schedule:/celery_beat_schedule
     env_file:
       - .envs/.local
+      - .envs/.postgres
     depends_on:
       - redis
+    networks:
+      - gropoz-network
     command: /celery_start/worker/start
 
   celery_flower_app:
@@ -37,15 +47,24 @@ services:
     container_name: celery_flower_local
     volumes:
       - .:/app:z
+      - ./celery_service/task_json:/celery_service/task_json
+      - ./celery_beat_schedule:/celery_beat_schedule
     env_file:
       - .envs/.local
+      - .envs/.postgres
     depends_on:
       - redis
     ports:
       - "5555:5555"
+    networks:
+      - gropoz-network
     command: /celery_start/flower/start
 
   redis:
     image: redis:6-alpine
+    networks:
+      - gropoz-network
 
-
+networks:
+    gropoz-network:
+      external: true
