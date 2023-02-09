@@ -28,12 +28,8 @@ def check_page():
         if response["status"] != 200:
             log = validate_log(response, url)
             report = save_log(response, url, log)
-            date_time = report.created
-            time = date_time.strftime("%H:%M:%S")
-            date = date_time.strftime("%d-%m-%Y")
-            response["datetime"] = {"time": time, "date": date}
             if log:
-                send_email(response, url)
+                send_email(response, url, report)
         else:
             save_log(response, url, False)
 
@@ -51,8 +47,12 @@ def validate_page(url):
         return status_msg
 
 
-def send_email(message, url_page):
+def send_email(message, url_page, report):
     """Send email if status of page is not 200."""
+    date_time = report.created
+    time = date_time.strftime("%H:%M:%S")
+    date = date_time.strftime("%d-%m-%Y")
+    message["datetime"] = {"time": time, "date": date}
     email_host = Setting.EMAIL_HOST_USER
     email_sent = url_page.message_type.email
     msg_html = message_html(message)
@@ -61,20 +61,22 @@ def send_email(message, url_page):
     email["To"] = email_sent
     email["Subject"] = f"Error {message['status']} - {url_page.url_site}"
     email.set_content(msg_html, subtype="html")
-    smtp = smtplib.SMTP_SSL(Setting.EMAIL_HOST, port=Setting.EMAIL_PORT)
 
     try:
+        smtp = smtplib.SMTP_SSL(Setting.EMAIL_HOST, port=Setting.EMAIL_PORT)
         smtp.login(email_host, Setting.EMAIL_HOST_PASSWORD)
-    except smtplib.SMTPAuthenticationError as e:
-        logging.error(e)
-
-    try:
         smtp.sendmail(email_host, email_sent, email.as_string())
-    except smtplib.SMTPRecipientsRefused as e:
-        logging.error(e)
-    finally:
         smtp.quit()
         logging.info(msg=f" Email sent {email_sent}")
+    except (
+        TimeoutError,
+        smtplib.SMTPAuthenticationError,
+        smtplib.SMTPRecipientsRefused
+    ) as e:
+        logging.error(e)
+        report.is_alerted = False
+        session.add(report)
+        session.commit()
 
 
 def validate_log(response, url):
@@ -85,7 +87,8 @@ def validate_log(response, url):
         select(SiteRegister).where(
             SiteRegister.status_code == str(response["status"]),
             SiteRegister.page_id == url.id,
-            SiteRegister.created >= datetime_old
+            SiteRegister.created >= datetime_old,
+            SiteRegister.is_alerted == True
         )).scalar()
     if get_register is None:
         result = True
