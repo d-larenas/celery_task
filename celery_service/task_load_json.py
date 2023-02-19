@@ -28,6 +28,10 @@ def load_beat_schedule(task_dict):
         beat_schedule[task] = {}
         beat_schedule[task]["task"] = task_dict[task]["task"]
         beat_schedule[task]["schedule"] = crontab(**task_dict[task]["schedule"])
+        if "kwargs" in task_dict[task]:
+            beat_schedule[task]["kwargs"] = task_dict[task]["kwargs"]
+        if "args" in task_dict[task]:
+            beat_schedule[task]["args"] = task_dict[task]["args"]
     return beat_schedule
 
 
