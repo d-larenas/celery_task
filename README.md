@@ -53,11 +53,14 @@ Edit file /celery_service/task_json/task.json
             "hour":"*/1"
         }
     },
-    "check-status-page-day": {
-        "task": "tasks.task.check_page",
+     "check-status-page-day": {
+        "task": "tasks.task.sent_report",
         "schedule": {
-            "minute":"*/5"
-        }
+            "hour":"1",
+            "day_of_week": "1"
+        },
+      "kwargs": {"status":  200},
+      "args": [1,2]
     }
 
 }
